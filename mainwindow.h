@@ -8,6 +8,13 @@
 #include <QVector>
 #include <QFileInfo>
 #include <QProcess>
+#include <QThread>
+#include <QTextCodec>
+#include <QRegularExpression>
+#include <QFileDialog>
+#include <QSettings>
+
+#define COPY_ERROR_TEXT "Не удается найти указанный файл"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -26,14 +33,23 @@ public:
 private slots:
     void onPB_startBuild();
 
+signals:
+    void outputReady(QString output);
+    void statusChanged(QString status);
+
 private:
     Ui::MainWindow *ui;
     QVector<QString> m_dllFullPaths;
     QVector<QString> m_dllDirs;
+    QVector<QString> m_errorsCopyFiles;
 
-    QString m_pathScript = "buid.cmd";
+    QThread *m_procThread = nullptr;
+    QProcess *m_procCmdScript = nullptr;
+
+    QString m_pathScript = "build.cmd";
     QString m_pathMingwDir = "";
     QString m_pathProcExplFile = "";
     QString m_pathBuildDir = "";
+    QString m_prevOutput = "";
 };
 #endif // MAINWINDOW_H
